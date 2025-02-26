@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Post < ApplicationRecord
   MAXIMUM_TITLE_LENGTH = 125
   MAXIMUM_DESCRIPTION_LENGTH = 10000
