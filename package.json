@@ -46,6 +46,7 @@
     "compression-webpack-plugin": "9",
     "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^3.2.0",
+    "date-fns": "^4.1.0",
     "dotenv-webpack": "^8.0.1",
     "formik": "2.2.0",
     "i18next": "21.7.0",
@@ -62,6 +63,7 @@
     "ramda": "0.29.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-query": "3",
     "react-router-dom": "5.2.0",
     "react-toastify": "9.0.1",
     "react_ujs": "3.1.1",
@@ -72,11 +74,13 @@
     "style-loader": "^3.3.3",
     "tailwindcss": "^3.4.1",
     "terser-webpack-plugin": "5",
+    "util": "^0.12.5",
     "webpack": "5",
     "webpack-assets-manifest": "5",
     "webpack-cli": "4",
-    "webpack-dev-server": "^5.2.0",
-    "webpack-merge": "5"
+    "webpack-dev-server": "4.13.1",
+    "webpack-merge": "5",
+    "zustand": "4.3.2"
   },
   "version": "0.1.0",
   "resolutions": {
