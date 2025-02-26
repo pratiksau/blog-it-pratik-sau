@@ -70,3 +70,5 @@ gem "responders"
 
 # For compiling and bundling JavaScript. Read more: https://github.com/shakacode/shakapacker
 gem "shakapacker", "~> 6.6.0"
+
+gem 'react-rails', "~> 2.7.1"
