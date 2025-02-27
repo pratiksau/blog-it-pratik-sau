@@ -4,6 +4,7 @@ import { Typography } from "@bigbinary/neetoui";
 import { format } from "date-fns";
 
 import postApi from "../../apis/posts";
+import PageLoader from "../commons/PageLoader";
 
 const Blogs = () => {
   const [posts, setPosts] = useState([]);
@@ -33,7 +34,7 @@ const Blogs = () => {
   if (loading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        Loading...
+        <PageLoader />
       </div>
     );
   }
@@ -41,13 +42,13 @@ const Blogs = () => {
   return (
     <div className="flex-1 overflow-auto p-8">
       <Typography className="mb-8 text-4xl font-bold">Blog posts</Typography>
-      <div className="max-w-3xl space-y-8">
+      <div className="w-full space-y-8">
         {posts.map(post => (
           <div className="border-b border-gray-200 pb-8" key={post.id}>
-            <Typography className="mb-2 text-2xl font-semibold">
+            <Typography className="mb-2 line-clamp-2 text-2xl font-semibold">
               {post.title}
             </Typography>
-            <Typography className="mb-2 text-sm text-gray-500">
+            <Typography className="mb-2 line-clamp-2 text-sm text-gray-500">
               {post.description}
             </Typography>
             <Typography className="text-sm text-gray-500">
