@@ -7,9 +7,10 @@ import "../stylesheets/application.scss";
 
 const componentRequireContext = require.context("src", true);
 
-const { setAuthHeaders } = require("apis/axios");
+const { setAuthHeaders, registerInterceptors } = require("apis/axios");
 const { initializeLogger } = require("common/logger");
 
+registerInterceptors();
 initializeLogger();
 setAuthHeaders();
 

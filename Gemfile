@@ -77,3 +77,5 @@ gem "responders"
 gem "shakapacker", "~> 6.6.0"
 
 gem "react-rails", "~> 2.7.1"
+
+gem "pundit"

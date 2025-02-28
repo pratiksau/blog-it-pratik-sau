@@ -29,6 +29,10 @@
 
 en:
   hello: "Hello world"
+  generic_error: "An error occurred while processing your request. Please try again later."
+  successfully_created: "Post was successfully created"
+  successfully_updated: "Post was successfully updated"
+  successfully_deleted: "Post was successfully deleted"
   post:
     slug:
-      immutable: "can't be changed"
+      immutable: "is immutable!"

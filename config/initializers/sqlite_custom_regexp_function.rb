@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
-# Instead of monkey-patching the adapter, let's add the regexp function directly to the SQLite connection
-Rails.application.config.after_initialize do
-  if ActiveRecord::Base.connection_db_config.configuration_hash[:adapter] == "sqlite3"
-    ActiveRecord::Base.connection.raw_connection.create_function("regexp", 2) do |fn, pattern, expr|
+ActiveRecord::ConnectionAdapters::SQLite3Adapter.class_eval do
+  alias_method :original_initialize, :initialize
+
+  def initialize(*args)
+    original_initialize(*args)
+
+    raw_connection.create_function("regexp", 2) do |function, pattern, expression|
       regex_matcher = Regexp.new(pattern.to_s, Regexp::IGNORECASE)
-      fn.result = expr.to_s.match(regex_matcher) ? 1 : 0
+      function.result = expression.to_s.match(regex_matcher) ? 1 : 0
     end
   end
 end
