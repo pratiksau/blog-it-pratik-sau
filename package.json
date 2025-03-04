@@ -80,6 +80,7 @@
     "webpack-cli": "4",
     "webpack-dev-server": "4.13.1",
     "webpack-merge": "5",
+    "yup": "^0.32.11",
     "zustand": "4.3.2"
   },
   "version": "0.1.0",

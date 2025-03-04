@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import { Typography } from "@bigbinary/neetoui";
+import { Button, Typography } from "@bigbinary/neetoui";
 import { format } from "date-fns";
+
+import Card from "./Card";
 
 import postApi from "../../apis/posts";
 import PageLoader from "../commons/PageLoader";
@@ -41,20 +43,24 @@ const Blogs = () => {
 
   return (
     <div className="flex-1 overflow-auto p-8">
-      <Typography className="mb-8 text-4xl font-bold">Blog posts</Typography>
-      <div className="w-full space-y-8">
+      <div className="mb-8 flex flex-row items-center justify-between">
+        <Typography className="text-4xl font-bold">Blog posts</Typography>
+        <Button
+          className="border border-black bg-black px-4 py-2 text-white"
+          to="/blogs/create"
+        >
+          Add new blog post
+        </Button>
+      </div>
+      <div className="w-full space-y-8 px-2">
         {posts.map(post => (
-          <div className="border-b border-gray-200 pb-8" key={post.id}>
-            <Typography className="mb-2 line-clamp-2 text-2xl font-semibold">
-              {post.title}
-            </Typography>
-            <Typography className="mb-2 line-clamp-2 text-sm text-gray-500">
-              {post.description}
-            </Typography>
-            <Typography className="text-sm text-gray-500">
-              {formatDate(post.created_at)}
-            </Typography>
-          </div>
+          <Card
+            date={formatDate(post.created_at)}
+            description={post.description}
+            key={post.id}
+            slug={post.slug}
+            title={post.title}
+          />
         ))}
       </div>
     </div>
