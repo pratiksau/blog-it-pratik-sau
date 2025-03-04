@@ -1,9 +1,18 @@
 # frozen_string_literal: true
 
 class Api::V1::PostsController < ApplicationController
+  before_action :load_post!, only: %i[show]
+
   def index
-    posts = Post.all
-    render status: :ok, json: { posts: }
+    posts = Post.includes(:categories, :user)
+
+    if params[:category_ids].present?
+      category_ids = params[:category_ids].split(",")
+      posts = posts.joins(:categories).where(categories: { id: category_ids }).distinct
+    end
+
+    render status: :ok,
+      json: { posts: posts.as_json(include: { categories: { only: %i[id name] }, user: { only: %i[id name] } }) }
   end
 
   def create
@@ -13,13 +22,16 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def show
-    post = Post.find_by!(slug: params[:slug])
-    render_json({ post: })
+    render_json({ post: @post.as_json(include: { categories: { only: %i[id name] }, user: { only: %i[id name] } }) })
   end
 
   private
 
     def post_params
-      params.require(:post).permit(:title, :description)
+      params.require(:post).permit(:title, :description, :user_id, :organization_id, category_ids: [])
+    end
+
+    def load_post!
+      @post = Post.find_by!(slug: params[:slug])
     end
 end

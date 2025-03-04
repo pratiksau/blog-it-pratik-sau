@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { Button, Typography } from "@bigbinary/neetoui";
 import { format } from "date-fns";
+import { useLocation } from "react-router-dom";
 
 import Card from "./Card";
 
@@ -11,21 +12,39 @@ import PageLoader from "../commons/PageLoader";
 const Blogs = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const categoryId = searchParams.get("category_id");
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchPosts = async () => {
       try {
-        const response = await postApi.fetch();
-        setPosts(response.data.posts);
+        setLoading(true);
+        const categoryIds = searchParams.get("category_ids");
+        const params = categoryIds ? { category_ids: categoryIds } : {};
+        const response = await postApi.fetch(params);
+
+        if (isMounted) {
+          setPosts(response.data.posts);
+          setLoading(false);
+        }
       } catch (error) {
         logger.error("Error fetching posts:", error);
-      } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchPosts();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchParams.get("category_ids")]);
 
   const formatDate = dateString => {
     const date = new Date(dateString);
@@ -44,7 +63,14 @@ const Blogs = () => {
   return (
     <div className="flex-1 overflow-auto p-8">
       <div className="mb-8 flex flex-row items-center justify-between">
-        <Typography className="text-4xl font-bold">Blog posts</Typography>
+        <div>
+          <Typography className="text-4xl font-bold">Blog posts</Typography>
+          {categoryId && (
+            <Typography className="text-sm text-gray-500">
+              Filtered by category
+            </Typography>
+          )}
+        </div>
         <Button
           className="border border-black bg-black px-4 py-2 text-white"
           to="/blogs/create"
@@ -52,17 +78,27 @@ const Blogs = () => {
           Add new blog post
         </Button>
       </div>
-      <div className="w-full space-y-8 px-2">
-        {posts.map(post => (
-          <Card
-            date={formatDate(post.created_at)}
-            description={post.description}
-            key={post.id}
-            slug={post.slug}
-            title={post.title}
-          />
-        ))}
-      </div>
+      {posts.length > 0 ? (
+        <div className="w-full space-y-8 px-2">
+          {posts.map(post => (
+            <Card
+              author={post.user.name}
+              category={post.categories}
+              date={formatDate(post.created_at)}
+              description={post.description}
+              key={post.id}
+              slug={post.slug}
+              title={post.title}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="py-10 text-center">
+          <Typography className="text-gray-500">
+            No posts found for the selected category.
+          </Typography>
+        </div>
+      )}
     </div>
   );
 };

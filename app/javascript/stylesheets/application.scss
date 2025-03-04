@@ -2,37 +2,4 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "react-toastify/dist/ReactToastify.min.css";
-
-/* NeetoUI Input and Textarea customization */
-:root {
-  /* Input wrapper */
-  --neeto-ui-input-wrapper-flex-grow: 1;
-
-  /* Input */
-  --neeto-ui-input-padding-x: 12px;
-  --neeto-ui-input-padding-y: 8px;
-  --neeto-ui-input-min-height: 38px;
-  --neeto-ui-input-font-size: var(--neeto-ui-text-sm);
-  --neeto-ui-input-border-width: 1px;
-  --neeto-ui-input-border-color: rgb(var(--neeto-ui-gray-400));
-  --neeto-ui-input-border-radius: var(--neeto-ui-rounded);
-  --neeto-ui-input-color: rgb(var(--neeto-ui-gray-800));
-  --neeto-ui-input-bg-color: rgb(var(--neeto-ui-white));
-
-  /* Textarea */
-  --neeto-ui-textarea-padding-x: 12px;
-  --neeto-ui-textarea-padding-y: 8px;
-  --neeto-ui-textarea-line-height: 1.5;
-
-  /* Focus Within */
-  --neeto-ui-input-focus-within-border-color: rgb(var(--neeto-ui-primary-500));
-  --neeto-ui-input-focus-within-box-shadow: 0 0 0 3px rgba(var(--neeto-ui-primary-500), 15%);
-
-  /* Hover */
-  --neeto-ui-input-hover-border-color: rgb(var(--neeto-ui-gray-700));
-}
-
-/* Additional custom styles for full width inputs */
-.neeto-ui-input, .neeto-ui-textarea {
-  width: 100% !important;
-}
+@import "@bigbinary/neetoui"

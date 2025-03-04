@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :posts, only: %i[index create show], param: :slug
       resources :users, only: %i[index]
+      resources :categories, only: %i[index create]
     end
   end
   root "home#index"

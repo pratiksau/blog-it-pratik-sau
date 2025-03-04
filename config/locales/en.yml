@@ -33,6 +33,7 @@ en:
   successfully_created: "Post was successfully created"
   successfully_updated: "Post was successfully updated"
   successfully_deleted: "Post was successfully deleted"
+  successfully_created_category: "Category was successfully created"
   post:
     slug:
       immutable: "is immutable!"

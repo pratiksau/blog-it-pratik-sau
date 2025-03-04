@@ -1,13 +1,23 @@
 import React from "react";
 
-import { Button } from "@bigbinary/neetoui";
+import { Button, Input, Textarea } from "@bigbinary/neetoui";
 import { Form } from "@bigbinary/neetoui/formik";
 import classnames from "classnames";
+import Select from "react-select";
 
 import { validationSchema } from "../../utils/validation";
 
-const BlogForm = ({ loading, handleSubmit, handleCancel }) => {
-  const initialValues = { title: "", description: "" };
+const BlogForm = ({ loading, handleSubmit, handleCancel, categories }) => {
+  const categoryOptions = categories.map(category => ({
+    value: category.id,
+    label: category.name,
+  }));
+
+  const initialValues = {
+    title: "",
+    description: "",
+    selectedCategories: [],
+  };
 
   const onSubmit = (values, { setSubmitting }) => {
     handleSubmit(values);
@@ -29,6 +39,8 @@ const BlogForm = ({ loading, handleSubmit, handleCancel }) => {
         handleChange,
         handleBlur,
         isSubmitting,
+        setFieldValue,
+        setFieldTouched,
       }) => (
         <div className="w-full">
           <div className="mb-6">
@@ -38,10 +50,9 @@ const BlogForm = ({ loading, handleSubmit, handleCancel }) => {
             >
               Title
             </label>
-            <input
+            <Input
               data-cyy="blog-title-input"
               id="blog-title"
-              // label="Title"
               maxLength={100}
               name="title"
               placeholder="Enter title"
@@ -59,6 +70,35 @@ const BlogForm = ({ loading, handleSubmit, handleCancel }) => {
             )}
           </div>
           <div className="mb-6">
+            <label
+              className="mb-1 block text-sm font-medium"
+              htmlFor="categories"
+            >
+              Categories
+            </label>
+            <Select
+              isMulti
+              id="categories"
+              name="selectedCategories"
+              options={categoryOptions}
+              placeholder="Select categories"
+              value={values.selectedCategories}
+              className={classnames({
+                "border-red-500":
+                  touched.selectedCategories && errors.selectedCategories,
+              })}
+              onBlur={() => setFieldTouched("selectedCategories", true)}
+              onChange={selected => {
+                setFieldValue("selectedCategories", selected || []);
+              }}
+            />
+            {touched.selectedCategories && errors.selectedCategories && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.selectedCategories}
+              </p>
+            )}
+          </div>
+          <div className="mb-6">
             <div className="flex justify-between">
               <label
                 className="mb-1 block text-sm font-medium"
@@ -70,7 +110,7 @@ const BlogForm = ({ loading, handleSubmit, handleCancel }) => {
                 {values.description.length}/10000
               </span>
             </div>
-            <textarea
+            <Textarea
               cols={70}
               dataCy="blog-description-textarea"
               id="blog-description"

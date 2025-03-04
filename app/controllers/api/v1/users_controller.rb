@@ -2,7 +2,7 @@
 
 class Api::V1::UsersController < ApplicationController
   def index
-    users = User.all
+    users = User.select(:id, :name)
     render status: :ok, json: { users: }
   end
 end
