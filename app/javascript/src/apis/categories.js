@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const fetch = () => axios.get("/api/v1/categories");
+const fetch = (searchTerm = "") => {
+  const params = searchTerm ? { search: searchTerm } : {};
+
+  return axios.get("/api/v1/categories", { params });
+};
 
 const create = payload =>
   axios.post("/api/v1/categories", {

@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 
-import { AddCircle, Search } from "@bigbinary/neeto-icons";
-import { Button, Typography } from "@bigbinary/neetoui";
+import { AddCircle, Close, Search } from "@bigbinary/neeto-icons";
+import { Button, Input, Typography } from "@bigbinary/neetoui";
 import { useHistory, useLocation } from "react-router-dom";
 
 import Card from "./Card";
 import CategoryModal from "./Modal";
 
+import { useDebounce } from "../../../hooks/useDebounce";
 import categoryApi from "../../apis/categories";
 
 const Pane = () => {
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const history = useHistory();
   const location = useLocation();
@@ -26,9 +30,9 @@ const Pane = () => {
     [searchParams.get("category_ids")]
   );
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (search = "") => {
     try {
-      const response = await categoryApi.fetch();
+      const response = await categoryApi.fetch(search);
       setCategories(response.data.categories);
     } catch (error) {
       logger("Error fetching categories:", error);
@@ -56,19 +60,20 @@ const Pane = () => {
     };
   }, []);
 
+  useEffect(() => {
+    fetchCategories(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
+
   const handleCategorySelect = useCallback(
     categoryId => {
       const params = new URLSearchParams(location.search);
       const categoryIdStr = categoryId.toString();
 
-      // Convert to array, toggle selection, and join back to string
       let categoryIdsArray = selectedCategoryIds.slice();
 
       if (categoryIdsArray.includes(categoryIdStr)) {
-        // Remove if already selected
         categoryIdsArray = categoryIdsArray.filter(id => id !== categoryIdStr);
       } else {
-        // Add if not selected
         categoryIdsArray.push(categoryIdStr);
       }
 
@@ -98,13 +103,25 @@ const Pane = () => {
     }
   };
 
+  const handleSearchToggle = () => {
+    setShowSearch(!showSearch);
+    if (!showSearch) {
+      setSearchTerm("");
+      fetchCategories();
+    }
+  };
+
   return (
     <div className="flex h-screen w-[20vw] flex-col overflow-y-scroll bg-gray-300">
       <div className="flex flex-col p-2">
         <div className="flex flex-row items-center justify-between">
           <Typography>CATEGORIES</Typography>
           <div className="mx-1 flex flex-row">
-            <Button icon={() => <Search />} style="text" />
+            <Button
+              icon={() => <Search />}
+              style="text"
+              onClick={handleSearchToggle}
+            />
             <Button
               icon={() => <AddCircle />}
               style="text"
@@ -112,6 +129,24 @@ const Pane = () => {
             />
           </div>
         </div>
+        {showSearch && (
+          <div className="my-2">
+            <Input
+              placeholder="Search categories..."
+              value={searchTerm}
+              suffix={
+                searchTerm ? (
+                  <Button
+                    icon={() => <Close />}
+                    style="text"
+                    onClick={() => setSearchTerm("")}
+                  />
+                ) : null
+              }
+              onChange={event => setSearchTerm(event.target.value)}
+            />
+          </div>
+        )}
         <div className="flex flex-col">
           {categories.map(category => (
             <Card

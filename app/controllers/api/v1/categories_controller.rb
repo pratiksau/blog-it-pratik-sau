@@ -2,7 +2,11 @@
 
 class Api::V1::CategoriesController < ApplicationController
   def index
-    categories = Category.all
+    if params[:search].present?
+      categories = Category.where("name LIKE ?", "%#{params[:search]}%")
+    else
+      categories = Category.all
+    end
     render status: :ok, json: { categories: }
   end
 
