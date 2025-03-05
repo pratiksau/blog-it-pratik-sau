@@ -8,7 +8,8 @@ class Api::V1::PostsController < ApplicationController
 
     if params[:category_ids].present?
       category_ids = params[:category_ids].split(",")
-      posts = posts.joins(:categories).where(categories: { id: category_ids }).distinct
+      post_ids = Post.joins(:categories).where(categories: { id: category_ids }).distinct.pluck(:id)
+      posts = posts.where(id: post_ids)
     end
 
     render status: :ok,

@@ -35,7 +35,7 @@ const Pane = () => {
       const response = await categoryApi.fetch(search);
       setCategories(response.data.categories);
     } catch (error) {
-      logger("Error fetching categories:", error);
+      logger.log("Error fetching categories:", error);
     }
   };
 
@@ -49,7 +49,7 @@ const Pane = () => {
           setCategories(response.data.categories);
         }
       } catch (error) {
-        logger("Error fetching categories:", error);
+        logger.log("Error fetching categories:", error);
       }
     };
 
@@ -98,7 +98,7 @@ const Pane = () => {
 
       return true;
     } catch (error) {
-      logger("Error creating category:", error);
+      logger.log("Error creating category:", error);
       throw error;
     }
   };
