@@ -5,6 +5,28 @@ class ApplicationController < ActionController::Base
 
   rescue_from StandardError, with: :handle_api_exception
 
+  before_action :authenticate_user_using_x_auth_token
+
+  def authenticate_user_using_x_auth_token
+    user_email = request.headers["X-Auth-Email"]
+    auth_token = request.headers["X-Auth-Token"]
+
+    if user_email.present? && auth_token.present?
+      user = User.find_by(email: user_email)
+      if user.present? && user.authentication_token == auth_token
+        @current_user = user
+      else
+        render_error("Invalid credentials", :unauthorized)
+      end
+    else
+      render_error("Missing credentials", :unauthorized)
+    end
+  end
+
+  def current_user
+    @current_user
+  end
+
   def handle_api_exception(exception)
     case exception
     when -> (e) { e.message.include?("PG::") || e.message.include?("SQLite3::") }

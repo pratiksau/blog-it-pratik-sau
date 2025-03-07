@@ -4,8 +4,11 @@ import { Typography } from "@bigbinary/neetoui";
 
 import BlogForm from "./Form";
 
+import { setAuthHeaders } from "../../apis/axios";
 import categoryApi from "../../apis/categories";
 import postApi from "../../apis/posts";
+import userApi from "../../apis/users";
+import { getFromLocalStorage } from "../../utils/storage";
 
 const CreateBlog = ({ history }) => {
   const [loading, setLoading] = useState(false);
@@ -13,6 +16,8 @@ const CreateBlog = ({ history }) => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
+    setAuthHeaders();
+
     const fetchCategories = async () => {
       try {
         const response = await categoryApi.fetch();
@@ -22,7 +27,7 @@ const CreateBlog = ({ history }) => {
       }
     };
 
-    const currentUserId = 1;
+    const currentUserId = getFromLocalStorage("authUserId");
     setUserId(currentUserId);
 
     fetchCategories();
@@ -34,7 +39,9 @@ const CreateBlog = ({ history }) => {
     try {
       const category_ids = selectedCategories.map(category => category.value);
 
-      const organization_id = 1;
+      const userResponse = await userApi.show(userId);
+
+      const organization_id = userResponse.data.user.organization_id;
 
       await postApi.create({
         title,

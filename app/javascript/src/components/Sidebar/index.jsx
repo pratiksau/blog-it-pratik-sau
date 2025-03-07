@@ -1,16 +1,22 @@
 import React, { useState } from "react";
 
 import { Book, Edit, List } from "@bigbinary/neeto-icons";
-import { Button, Avatar } from "@bigbinary/neetoui";
+import { Button } from "@bigbinary/neetoui";
 import classnames from "classnames";
 import { useLocation } from "react-router-dom";
 
 import Pane from "./Pane";
+import UserMenu from "./UserMenu";
+
+import { getFromLocalStorage } from "../../utils/storage";
 
 const Sidebar = () => {
   const location = useLocation();
   const pathname = location.pathname;
   const [isPaneOpen, setIsPaneOpen] = useState(false);
+
+  const userName = getFromLocalStorage("authUserName");
+  const userEmail = getFromLocalStorage("authEmail");
 
   const isActive = path => {
     if (path === "/" && (pathname === "/" || pathname === "/blogs")) {
@@ -59,9 +65,11 @@ const Sidebar = () => {
             />
           </div>
         </div>
-        <div className="flex justify-center pb-4">
-          <Avatar user={{ name: "Pratik Sau" }} />
-        </div>
+        {userName && (
+          <div className="flex justify-center pb-4">
+            <UserMenu userEmail={userEmail} userName={userName} />
+          </div>
+        )}
       </div>
       <div
         className={`h-screen overflow-hidden transition-all duration-300 ease-in-out ${

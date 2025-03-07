@@ -1,7 +1,7 @@
 import { Toastr } from "@bigbinary/neetoui";
 import axios from "axios";
 
-import { setToLocalStorage } from "utils/storage";
+import { getFromLocalStorage, setToLocalStorage } from "../utils/storage";
 
 const DEFAULT_ERROR_MESSAGE =
   "An error occurred while processing your request. Please try again later.";
@@ -16,8 +16,10 @@ const setAuthHeaders = () => {
       .querySelector('[name="csrf-token"]')
       .getAttribute("content"),
   };
-  const token = localStorage.getItem("authToken");
-  const email = localStorage.getItem("authEmail");
+
+  const token = getFromLocalStorage("authToken");
+  const email = getFromLocalStorage("authEmail");
+
   if (token && email) {
     axios.defaults.headers["X-Auth-Email"] = email;
     axios.defaults.headers["X-Auth-Token"] = token;
@@ -37,7 +39,11 @@ const handleSuccessResponse = response => {
 
 const handleErrorResponse = axiosErrorObject => {
   if (axiosErrorObject.response?.status === 401) {
-    setToLocalStorage({ authToken: null, email: null, userId: null });
+    setToLocalStorage({
+      authToken: null,
+      email: null,
+      userId: null,
+    });
     setTimeout(() => (window.location.href = "/"), 2000);
   }
   Toastr.error(axiosErrorObject.response?.data?.error || DEFAULT_ERROR_MESSAGE);
@@ -54,4 +60,9 @@ const registerInterceptors = () => {
   );
 };
 
-export { registerInterceptors, setAuthHeaders };
+const resetAuthTokens = () => {
+  delete axios.defaults.headers["X-Auth-Email"];
+  delete axios.defaults.headers["X-Auth-Token"];
+};
+
+export { registerInterceptors, setAuthHeaders, resetAuthTokens };

@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 class Api::V1::CategoriesController < ApplicationController
+  skip_before_action :authenticate_user_using_x_auth_token
   def index
     if params[:search].present?
-      categories = Category.where("name LIKE ?", "%#{params[:search]}%")
+      @categories = Category.where("name LIKE ?", "%#{params[:search]}%")
     else
-      categories = Category.all
+      @categories = Category.all
     end
-    render status: :ok, json: { categories: }
+
+    render :index
   end
 
   def create

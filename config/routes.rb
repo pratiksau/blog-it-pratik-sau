@@ -10,11 +10,16 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   namespace :api do
     namespace :v1 do
-      resources :posts, only: %i[index create show], param: :slug
-      resources :users, only: %i[index]
-      resources :categories, only: %i[index create]
+      constraints(lambda { |req| req.format == :json }) do
+        resources :posts, only: %i[index create show], param: :slug
+        resources :users, only: %i[index create show]
+        resources :categories, only: %i[index create]
+        resources :organizations, only: %i[index]
+        resource :sessions, only: %i[create destroy]
+      end
     end
   end
+
   root "home#index"
   get "*path", to: "home#index", via: :all
 end

@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
 class Api::V1::PostsController < ApplicationController
+  skip_before_action :authenticate_user_using_x_auth_token, only: %i[show]
   before_action :load_post!, only: %i[show]
 
   def index
-    posts = Post.includes(:categories, :user)
-
+    @posts = if current_user
+      Post.where(organization_id: current_user.organization_id).includes(:categories, :user)
+             else
+               Post.none
+    end
     if params[:category_ids].present?
       category_ids = params[:category_ids].split(",")
       post_ids = Post.joins(:categories).where(categories: { id: category_ids }).distinct.pluck(:id)
-      posts = posts.where(id: post_ids)
+      @posts = @posts.where(id: post_ids)
     end
 
-    render status: :ok,
-      json: { posts: posts.as_json(include: { categories: { only: %i[id name] }, user: { only: %i[id name] } }) }
+    render :index
   end
 
   def create
@@ -23,7 +26,7 @@ class Api::V1::PostsController < ApplicationController
   end
 
   def show
-    render_json({ post: @post.as_json(include: { categories: { only: %i[id name] }, user: { only: %i[id name] } }) })
+    render :show
   end
 
   private
