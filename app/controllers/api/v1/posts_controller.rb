@@ -1,32 +1,25 @@
 # frozen_string_literal: true
 
 class Api::V1::PostsController < ApplicationController
+  after_action :verify_authorized, except: %i[index]
+  after_action :verify_policy_scoped, only: %i[index]
+
   skip_before_action :authenticate_user_using_x_auth_token, only: %i[show]
   before_action :load_post!, only: %i[show]
 
   def index
-    @posts = if current_user
-      Post.where(organization_id: current_user.organization_id).includes(:categories, :user)
-             else
-               Post.none
-    end
-    if params[:category_ids].present?
-      category_ids = params[:category_ids].split(",")
-      post_ids = Post.joins(:categories).where(categories: { id: category_ids }).distinct.pluck(:id)
-      @posts = @posts.where(id: post_ids)
-    end
-
-    render :index
+    @posts = policy_scope(Post)
   end
 
   def create
     post = Post.new(post_params)
+    authorize post
     post.save!
     render_notice(t("successfully_created"))
   end
 
   def show
-    render :show
+    authorize @post
   end
 
   private

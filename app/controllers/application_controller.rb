@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
   protect_from_forgery
 
   rescue_from StandardError, with: :handle_api_exception
+  rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error
 
   before_action :authenticate_user_using_x_auth_token
 
@@ -93,5 +95,9 @@ class ApplicationController < ActionController::Base
       Rails.logger.info exception.class.to_s
       Rails.logger.info exception.to_s
       Rails.logger.info exception.backtrace.join("\n")
+    end
+
+    def handle_authorization_error
+      render_error("Access denied. You are not authorized to perform this action.", :forbidden)
     end
 end
