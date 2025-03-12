@@ -9,10 +9,19 @@ const create = payload =>
 
 const show = slug => axios.get(`/api/v1/posts/${slug}`);
 
+const update = (slug, payload) =>
+  axios.put(`/api/v1/posts/${slug}`, {
+    post: payload,
+  });
+
+const destroy = slug => axios.delete(`/api/v1/posts/${slug}`);
+
 const postApi = {
   fetch,
   create,
   show,
+  update,
+  destroy,
 };
 
 export default postApi;

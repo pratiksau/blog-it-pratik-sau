@@ -4,15 +4,21 @@ class Api::V1::PostsController < ApplicationController
   after_action :verify_authorized, except: %i[index]
   after_action :verify_policy_scoped, only: %i[index]
 
-  skip_before_action :authenticate_user_using_x_auth_token, only: %i[show]
-  before_action :load_post!, only: %i[show]
+  before_action :load_post!, only: %i[show update destroy]
 
   def index
-    @posts = policy_scope(Post)
+    @posts = policy_scope(Post).includes(:categories, :user)
+
+    if params[:category_ids].present?
+      category_ids = params[:category_ids].split(",")
+      post_ids = Post.joins(:categories).where(categories: { id: category_ids }).distinct.pluck(:id)
+      @posts = @posts.where(id: post_ids)
+    end
   end
 
   def create
     post = Post.new(post_params)
+    post.organization_id = current_user.organization_id
     authorize post
     post.save!
     render_notice(t("successfully_created"))
@@ -22,10 +28,23 @@ class Api::V1::PostsController < ApplicationController
     authorize @post
   end
 
+  def update
+    authorize @post
+    safe_params = post_params.except(:organization_id)
+    @post.update!(safe_params)
+    render_notice(t("successfully_updated")) unless params.key?(:quiet)
+  end
+
+  def destroy
+    authorize @post
+    @post.destroy!
+    render_notice(t("successfully_deleted"))
+  end
+
   private
 
     def post_params
-      params.require(:post).permit(:title, :description, :user_id, :organization_id, category_ids: [])
+      params.require(:post).permit(:title, :description, :user_id, :organization_id, :status, category_ids: [])
     end
 
     def load_post!

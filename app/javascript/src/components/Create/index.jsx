@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-import { Typography } from "@bigbinary/neetoui";
+import { Typography, Button, ActionDropdown } from "@bigbinary/neetoui";
 
 import BlogForm from "./Form";
 
@@ -14,6 +14,8 @@ const CreateBlog = ({ history }) => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [status, setStatus] = useState("published");
+  const formRef = useRef(null);
 
   useEffect(() => {
     setAuthHeaders();
@@ -50,6 +52,7 @@ const CreateBlog = ({ history }) => {
         user_id: userId,
         organization_id,
         is_bloggable: true,
+        status,
       });
 
       setLoading(false);
@@ -64,12 +67,76 @@ const CreateBlog = ({ history }) => {
     history.push("/blogs");
   };
 
+  const handleSaveAsDraft = () => {
+    setStatus("draft");
+    // if (formRef.current) {
+    //   formRef.current.handleSubmit();
+    // }
+  };
+
+  const handlePublish = () => {
+    setStatus("published");
+    // if (formRef.current) {
+    //   formRef.current.handleSubmit();
+    // }
+  };
+
+  // const handleSubmit = () => {
+  //   if (formRef.current) {
+  //     formRef.current.handleSubmit();
+  //   }
+  // };
+
+  const handleSubmitButton = () => {
+    if (formRef.current) {
+      formRef.current.handleSubmit();
+    }
+  };
+
   return (
     <div className="flex-1 overflow-auto p-8">
-      <Typography className="mb-8 text-3xl font-bold">New blog post</Typography>
+      <div className="mb-8 flex items-center justify-between">
+        <Typography className="text-3xl font-bold">New blog post</Typography>
+        <div className="flex space-x-2">
+          <Button
+            className="border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+            data-cy="cancel-button"
+            disabled={loading}
+            style="tertiary"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+          <ActionDropdown
+            buttonStyle="secondary"
+            label={status === "published" ? "Publish" : "Save as draft"}
+            buttonProps={{
+              className: "bg-black text-white",
+              disabled: loading,
+            }}
+            onClick={handleSubmitButton}
+          >
+            <li>
+              <Button
+                label="Save as draft"
+                style="tertiary"
+                onClick={handleSaveAsDraft}
+              />
+            </li>
+            <li>
+              <Button
+                label="Publish"
+                style="tertiary"
+                onClick={handlePublish}
+              />
+            </li>
+          </ActionDropdown>
+        </div>
+      </div>
       <div className="mx-auto max-w-3xl rounded-lg border border-gray-200 p-8 shadow-sm">
         <BlogForm
           categories={categories}
+          formRef={formRef}
           handleCancel={handleCancel}
           handleSubmit={handleSubmit}
           loading={loading}

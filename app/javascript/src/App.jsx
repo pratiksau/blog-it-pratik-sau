@@ -16,6 +16,7 @@ import Blogs from "./components/Blogs";
 import Show from "./components/Blogs/Show";
 import PrivateRoute from "./components/commons/PrivateRoute";
 import CreateBlog from "./components/Create";
+import EditBlog from "./components/Edit";
 import Lists from "./components/Lists";
 import Sidebar from "./components/Sidebar";
 import { getFromLocalStorage } from "./utils/storage";
@@ -47,6 +48,7 @@ const App = () => {
             <Route exact component={Lists} path="/lists" />
             <Route exact component={CreateBlog} path="/blogs/create" />
             <Route exact component={Show} path="/blogs/:slug" />
+            <Route exact component={EditBlog} path="/blogs/:slug/edit" />
             <PrivateRoute
               component={Blogs}
               condition={isLoggedIn}

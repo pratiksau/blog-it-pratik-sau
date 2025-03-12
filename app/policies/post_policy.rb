@@ -42,6 +42,7 @@ class PostPolicy
 
     def resolve
       scope.where(organization_id: user.organization_id)
+        .where("user_id = ? OR status = ?", user.id, "published")
     end
   end
 end

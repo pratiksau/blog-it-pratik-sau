@@ -1,13 +1,13 @@
 import React from "react";
 
-import { Button, Input, Textarea } from "@bigbinary/neetoui";
+import { Input, Textarea } from "@bigbinary/neetoui";
 import { Form } from "@bigbinary/neetoui/formik";
 import classnames from "classnames";
 import Select from "react-select";
 
 import { validationSchema } from "../../utils/validation";
 
-const BlogForm = ({ loading, handleSubmit, handleCancel, categories }) => {
+const BlogForm = ({ handleSubmit, categories, formRef }) => {
   const categoryOptions = categories.map(category => ({
     value: category.id,
     label: category.name,
@@ -30,6 +30,7 @@ const BlogForm = ({ loading, handleSubmit, handleCancel, categories }) => {
         initialValues,
         validationSchema,
         onSubmit,
+        innerRef: formRef,
       }}
     >
       {({
@@ -38,7 +39,6 @@ const BlogForm = ({ loading, handleSubmit, handleCancel, categories }) => {
         touched,
         handleChange,
         handleBlur,
-        isSubmitting,
         setFieldValue,
         setFieldTouched,
       }) => (
@@ -130,26 +130,6 @@ const BlogForm = ({ loading, handleSubmit, handleCancel, categories }) => {
             {touched.description && errors.description && (
               <p className="mt-1 text-sm text-red-500">{errors.description}</p>
             )}
-          </div>
-          <div className="flex justify-end space-x-2">
-            <Button
-              className="border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
-              data-cy="cancel-button"
-              disabled={loading || isSubmitting}
-              style="tertiary"
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="bg-black px-4 py-2 text-white hover:bg-gray-800 disabled:opacity-50"
-              data-cy="submit-button"
-              disabled={loading || isSubmitting}
-              style="primary"
-              type="submit"
-            >
-              Submit
-            </Button>
           </div>
         </div>
       )}

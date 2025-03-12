@@ -10,7 +10,8 @@ json.post do
     :is_bloggable,
     :slug,
     :created_at,
-    :updated_at
+    :updated_at,
+    :status
 
   json.user do
     json.extract! @post.user,
