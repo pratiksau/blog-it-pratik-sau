@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::PostsController < ApplicationController
-  after_action :verify_authorized, except: %i[index]
-  after_action :verify_policy_scoped, only: %i[index]
+  after_action :verify_authorized, except: %i[index user_posts]
+  after_action :verify_policy_scoped, only: %i[index user_posts]
 
   before_action :load_post!, only: %i[show update destroy]
 
@@ -39,6 +39,10 @@ class Api::V1::PostsController < ApplicationController
     authorize @post
     @post.destroy!
     render_notice(t("successfully_deleted"))
+  end
+
+  def user_posts
+    @posts = policy_scope(Post).includes(:categories, :user).where(user_id: current_user.id)
   end
 
   private

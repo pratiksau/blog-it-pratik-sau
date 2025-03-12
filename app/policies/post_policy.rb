@@ -32,6 +32,10 @@ class PostPolicy
     post.user_id == user.id
   end
 
+  def user_posts?
+    post.user_id == user.id
+  end
+
   class Scope
     attr_reader :user, :scope
 

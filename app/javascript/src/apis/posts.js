@@ -16,12 +16,15 @@ const update = (slug, payload) =>
 
 const destroy = slug => axios.delete(`/api/v1/posts/${slug}`);
 
+const userPosts = () => axios.get("/api/v1/posts/user_posts");
+
 const postApi = {
   fetch,
   create,
   show,
   update,
   destroy,
+  userPosts,
 };
 
 export default postApi;

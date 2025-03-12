@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { MenuVertical } from "@bigbinary/neeto-icons";
+import { ExternalLink, MenuVertical } from "@bigbinary/neeto-icons";
 import { Typography, Button, Dropdown } from "@bigbinary/neetoui";
 import { useParams, useHistory } from "react-router-dom";
 
@@ -16,6 +16,7 @@ const EditBlog = () => {
   const [post, setPost] = useState(null);
   const { slug } = useParams();
   const history = useHistory();
+  const [formValues, setFormValues] = useState(null);
 
   useEffect(() => {
     setAuthHeaders();
@@ -77,6 +78,27 @@ const EditBlog = () => {
     }
   };
 
+  const handleFormChange = values => {
+    setFormValues(values);
+  };
+
+  const handlePreview = () => {
+    const previewData = formValues
+      ? {
+          ...post,
+          title: formValues.title,
+          description: formValues.description,
+          categories: formValues.selectedCategories.map(category => ({
+            id: category.value,
+            name: category.label,
+          })),
+        }
+      : post;
+
+    sessionStorage.setItem("previewPost", JSON.stringify(previewData));
+    window.open(`/preview/${slug}`, "_blank");
+  };
+
   if (!post) return null;
 
   return (
@@ -84,6 +106,14 @@ const EditBlog = () => {
       <div className="mb-8 flex items-center justify-between">
         <Typography className="text-3xl font-bold">Edit blog post</Typography>
         <div className="flex space-x-2">
+          <Button
+            icon={ExternalLink}
+            style="text"
+            tooltipProps={{
+              content: "Preview",
+            }}
+            onClick={handlePreview}
+          />
           <Button
             className="border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
             data-cy="cancel-button"
@@ -124,6 +154,7 @@ const EditBlog = () => {
           handleSubmit={handleSubmit}
           loading={loading}
           post={post}
+          onFormChange={handleFormChange}
         />
       </div>
     </div>

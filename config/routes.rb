@@ -11,7 +11,11 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       constraints(lambda { |req| req.format == :json }) do
-        resources :posts, except: %i[new edit], param: :slug
+        resources :posts, except: %i[new edit], param: :slug do
+          collection do
+            get :user_posts
+          end
+        end
         resources :users, only: %i[index create show]
         resources :categories, only: %i[index create]
         resources :organizations, only: %i[index]

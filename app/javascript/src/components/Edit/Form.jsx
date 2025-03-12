@@ -14,6 +14,7 @@ const BlogForm = ({
   categories,
   post,
   isEdit = false,
+  onFormChange,
 }) => {
   const categoryOptions = categories.map(category => ({
     value: category.id,
@@ -59,6 +60,9 @@ const BlogForm = ({
       }) => {
         const handleTitleChange = event => {
           handleChange(event);
+          if (onFormChange) {
+            onFormChange(values);
+          }
         };
 
         const handleTitleBlur = event => {
@@ -67,6 +71,9 @@ const BlogForm = ({
 
         const handleDescriptionChange = event => {
           handleChange(event);
+          if (onFormChange) {
+            onFormChange(values);
+          }
         };
 
         const handleDescriptionBlur = event => {
@@ -75,6 +82,12 @@ const BlogForm = ({
 
         const handleSelectChange = selected => {
           setFieldValue("selectedCategories", selected || []);
+          if (onFormChange) {
+            onFormChange({
+              ...values,
+              selectedCategories: selected || [],
+            });
+          }
         };
 
         const handleSelectBlur = () => {

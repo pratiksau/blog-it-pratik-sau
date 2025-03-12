@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Book, Edit, List } from "@bigbinary/neeto-icons";
+import { Book, Edit, Folder, List } from "@bigbinary/neeto-icons";
 import { Button } from "@bigbinary/neetoui";
 import classnames from "classnames";
 import { useLocation } from "react-router-dom";
@@ -61,6 +61,16 @@ const Sidebar = () => {
               to="/blogs/create"
               className={classnames({
                 "rounded-lg bg-black p-1 text-white": isActive("/blogs/create"),
+              })}
+            />
+          </div>
+          <div className="flex justify-center">
+            <Button
+              icon={() => <Folder />}
+              style="text"
+              to="/summary"
+              className={classnames({
+                "rounded-lg bg-black p-1 text-white": isActive("/summary"),
               })}
             />
           </div>
