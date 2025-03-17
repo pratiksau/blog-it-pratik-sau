@@ -15,11 +15,9 @@ class Api::V1::OrganizationsControllerTest < ActionDispatch::IntegrationTest
     response_json = response.parsed_body
     organizations = response_json["organizations"]
 
-    # Ensure we get an array back and the count matches the Organization count in our test database.
     assert organizations.is_a?(Array)
     assert_equal Organization.count, organizations.length
 
-    # Each organization should only include id and name.
     organizations.each do |org|
       assert_equal ["id", "name"].sort, org.keys.sort
     end

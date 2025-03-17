@@ -43,6 +43,20 @@ class Api::V1::PostsController < ApplicationController
 
   def user_posts
     @posts = policy_scope(Post).includes(:categories, :user).where(user_id: current_user.id)
+
+    if params[:search].present?
+      @posts = @posts.where("title LIKE ?", "%#{params[:search]}%")
+    end
+
+    if params[:category_ids].present?
+      category_ids = params[:category_ids].split(",")
+      post_ids = Post.joins(:categories).where(categories: { id: category_ids }).distinct.pluck(:id)
+      @posts = @posts.where(id: post_ids)
+    end
+
+    if params[:status].present?
+      @posts = @posts.where(status: params[:status])
+    end
   end
 
   private

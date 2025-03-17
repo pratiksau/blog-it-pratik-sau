@@ -10,7 +10,7 @@ import CategoryModal from "./Modal";
 import { useDebounce } from "../../../hooks/useDebounce";
 import categoryApi from "../../apis/categories";
 
-const Pane = () => {
+const SidebarPane = () => {
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -167,4 +167,4 @@ const Pane = () => {
   );
 };
 
-export default Pane;
+export default SidebarPane;

@@ -5,7 +5,7 @@ import { Button } from "@bigbinary/neetoui";
 import classnames from "classnames";
 import { useLocation } from "react-router-dom";
 
-import Pane from "./Pane";
+import SidebarPane from "./Pane";
 import UserMenu from "./UserMenu";
 
 import { getFromLocalStorage } from "../../utils/storage";
@@ -91,7 +91,7 @@ const Sidebar = () => {
             isPaneOpen ? "" : "pointer-events-none"
           }`}
         >
-          <Pane />
+          <SidebarPane />
         </div>
       </div>
     </div>

@@ -84,7 +84,6 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal user.name, returned_user["name"]
     assert_equal user.email, returned_user["email"]
     assert_equal user.organization_id, returned_user["organization_id"]
-    # Ensure that only the permitted fields are returned.
     assert_equal ["id", "name", "email", "organization_id"].sort, returned_user.keys.sort
   end
 
