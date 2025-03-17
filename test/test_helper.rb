@@ -14,6 +14,15 @@ def enable_test_coverage
   end
 end
 
+def headers(user, options = {})
+  {
+    Accept: "application/json",
+    "Content_Type" => "application/json",
+    "X-Auth-Token" => user.authentication_token,
+    "X-Auth-Email" => user.email
+  }.merge(options)
+end
+
 enable_test_coverage if ENV["COVERAGE"]
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"

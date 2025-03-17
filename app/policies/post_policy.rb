@@ -17,7 +17,7 @@ class PostPolicy
   end
 
   def create?
-    true
+    post.user_id == user.id
   end
 
   def update?
