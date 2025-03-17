@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { ExternalLink, MenuVertical } from "@bigbinary/neeto-icons";
 import { Typography, Button, Dropdown } from "@bigbinary/neetoui";
@@ -17,6 +17,7 @@ const EditBlog = () => {
   const { slug } = useParams();
   const history = useHistory();
   const [formValues, setFormValues] = useState(null);
+  const formRef = useRef(null);
 
   useEffect(() => {
     setAuthHeaders();
@@ -99,6 +100,12 @@ const EditBlog = () => {
     window.open(`/preview/${slug}`, "_blank");
   };
 
+  const handleSubmitButton = () => {
+    if (formRef.current) {
+      formRef.current.handleSubmit();
+    }
+  };
+
   if (!post) return null;
 
   return (
@@ -127,7 +134,7 @@ const EditBlog = () => {
             className="bg-black text-white"
             label="Save changes"
             style="tertiary"
-            onClick={() => post && handleSubmit(post)}
+            onClick={handleSubmitButton}
           />
           <Dropdown
             icon={() => <MenuVertical />}
@@ -148,8 +155,10 @@ const EditBlog = () => {
       </div>
       <div className="mx-auto max-w-3xl rounded-lg border border-gray-200 p-8 shadow-sm">
         <BlogForm
+          hideButtons
           isEdit
           categories={categories}
+          formRef={formRef}
           handleCancel={handleCancel}
           handleSubmit={handleSubmit}
           loading={loading}

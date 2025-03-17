@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Input, Textarea } from "@bigbinary/neetoui";
+import { Input, Textarea } from "@bigbinary/neetoui";
 import { Form } from "@bigbinary/neetoui/formik";
 import classnames from "classnames";
 import Select from "react-select";
@@ -8,13 +8,12 @@ import Select from "react-select";
 import { validationSchema } from "../../utils/validation";
 
 const BlogForm = ({
-  loading,
   handleSubmit,
-  handleCancel,
   categories,
   post,
   isEdit = false,
   onFormChange,
+  formRef,
 }) => {
   const categoryOptions = categories.map(category => ({
     value: category.id,
@@ -46,6 +45,7 @@ const BlogForm = ({
         initialValues,
         validationSchema,
         onSubmit,
+        innerRef: formRef,
       }}
     >
       {({
@@ -54,44 +54,15 @@ const BlogForm = ({
         touched,
         handleChange,
         handleBlur,
-        isSubmitting,
         setFieldValue,
         setFieldTouched,
       }) => {
-        const handleTitleChange = event => {
-          handleChange(event);
+        // Handle form changes for preview functionality
+        const handleFormFieldChange = (field, value) => {
           if (onFormChange) {
-            onFormChange(values);
+            const updatedValues = { ...values, [field]: value };
+            onFormChange(updatedValues);
           }
-        };
-
-        const handleTitleBlur = event => {
-          handleBlur(event);
-        };
-
-        const handleDescriptionChange = event => {
-          handleChange(event);
-          if (onFormChange) {
-            onFormChange(values);
-          }
-        };
-
-        const handleDescriptionBlur = event => {
-          handleBlur(event);
-        };
-
-        const handleSelectChange = selected => {
-          setFieldValue("selectedCategories", selected || []);
-          if (onFormChange) {
-            onFormChange({
-              ...values,
-              selectedCategories: selected || [],
-            });
-          }
-        };
-
-        const handleSelectBlur = () => {
-          setFieldTouched("selectedCategories", true);
         };
 
         return (
@@ -115,8 +86,11 @@ const BlogForm = ({
                   "border-red-500": touched.title && errors.title,
                   "border-gray-300": !(touched.title && errors.title),
                 })}
-                onBlur={handleTitleBlur}
-                onChange={handleTitleChange}
+                onBlur={handleBlur}
+                onChange={e => {
+                  handleChange(e);
+                  handleFormFieldChange("title", e.target.value);
+                }}
               />
               {touched.title && errors.title && (
                 <p className="mt-1 text-sm text-red-500">{errors.title}</p>
@@ -140,8 +114,11 @@ const BlogForm = ({
                   "border-red-500":
                     touched.selectedCategories && errors.selectedCategories,
                 })}
-                onBlur={handleSelectBlur}
-                onChange={handleSelectChange}
+                onBlur={() => setFieldTouched("selectedCategories", true)}
+                onChange={selected => {
+                  setFieldValue("selectedCategories", selected || []);
+                  handleFormFieldChange("selectedCategories", selected || []);
+                }}
               />
               {touched.selectedCategories && errors.selectedCategories && (
                 <p className="mt-1 text-sm text-red-500">
@@ -177,34 +154,17 @@ const BlogForm = ({
                     touched.description && errors.description
                   ),
                 })}
-                onBlur={handleDescriptionBlur}
-                onChange={handleDescriptionChange}
+                onBlur={handleBlur}
+                onChange={e => {
+                  handleChange(e);
+                  handleFormFieldChange("description", e.target.value);
+                }}
               />
               {touched.description && errors.description && (
                 <p className="mt-1 text-sm text-red-500">
                   {errors.description}
                 </p>
               )}
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                className="border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
-                data-cy="cancel-button"
-                disabled={loading || isSubmitting}
-                style="tertiary"
-                onClick={handleCancel}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="bg-black px-4 py-2 text-white hover:bg-gray-800 disabled:opacity-50"
-                data-cy="submit-button"
-                disabled={loading || isSubmitting}
-                style="primary"
-                type="submit"
-              >
-                {isEdit ? "Update" : "Submit"}
-              </Button>
             </div>
           </div>
         );

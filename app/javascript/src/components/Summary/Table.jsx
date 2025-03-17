@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { MenuHorizontal } from "@bigbinary/neeto-icons";
-import { Button, Dropdown, Table } from "@bigbinary/neetoui";
+import { Button, Dropdown, Table, Tooltip } from "@bigbinary/neetoui";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 
 import postApi from "../../apis/posts";
 
 const BlogTable = ({ posts, setPosts }) => {
+  const [selectedPosts, setSelectedPosts] = useState([]);
+
   const handlePublishToggle = async (slug, currentStatus) => {
     try {
       await postApi.update(slug, {
@@ -63,12 +65,14 @@ const BlogTable = ({ posts, setPosts }) => {
       key: "title",
       width: 250,
       render: (title, record) => (
-        <Link
-          className="text-indigo-500 hover:text-indigo-700"
-          to={`/blogs/${record.slug}/edit`}
-        >
-          {title}
-        </Link>
+        <Tooltip content={title}>
+          <Link
+            className="line-clamp-1 text-indigo-500 hover:text-indigo-700"
+            to={`/blogs/${record.slug}/edit`}
+          >
+            {title}
+          </Link>
+        </Tooltip>
       ),
     },
     {
@@ -134,6 +138,8 @@ const BlogTable = ({ posts, setPosts }) => {
     categories: post.categories,
     created_at: post.created_at,
     status: post.status.charAt(0).toUpperCase() + post.status.slice(1),
+    key: post.id,
+    id: post.id,
   }));
 
   return (
@@ -142,6 +148,8 @@ const BlogTable = ({ posts, setPosts }) => {
       columnData={columnData}
       defaultPageSize={10}
       rowData={rowData}
+      selectedRowKeys={selectedPosts}
+      onRowSelect={selectedPosts => setSelectedPosts(selectedPosts)}
     />
   );
 };
