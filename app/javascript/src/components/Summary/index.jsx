@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 
 import { Filter } from "@bigbinary/neeto-icons";
-import { Button, Pane, Typography, Input, Select } from "@bigbinary/neetoui";
+import {
+  Button,
+  Pane,
+  Typography,
+  Input,
+  Select,
+  Dropdown,
+  Checkbox,
+  ActionDropdown,
+} from "@bigbinary/neetoui";
 import categoryApi from "src/apis/categories";
 import postApi from "src/apis/posts";
 
@@ -17,6 +26,15 @@ const Summary = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState({
+    title: true,
+    categories: true,
+    created_at: true,
+    status: true,
+    actions: true,
+  });
+
+  const { MenuItem } = Dropdown;
 
   const handleShowPane = () => {
     setShowPane(!showPane);
@@ -79,6 +97,14 @@ const Summary = () => {
     handleShowPane();
   };
 
+  const handleColumnVisibilityChange = columnKey => {
+    if (columnKey === "title") return;
+    setVisibleColumns(prev => ({
+      ...prev,
+      [columnKey]: !prev[columnKey],
+    }));
+  };
+
   if (loading) {
     return <PageLoader />;
   }
@@ -95,15 +121,54 @@ const Summary = () => {
               {posts.length} articles
             </Typography>
           </div>
-          <Button
-            className="my-2"
-            icon={Filter}
-            style="text"
-            onClick={handleShowPane}
-          />
+          <div className="flex flex-row items-center">
+            <ActionDropdown
+              buttonStyle="secondary"
+              className="p-2"
+              label="Columns"
+            >
+              <MenuItem className="px-4 py-2">
+                <Checkbox checked disabled id="column-title" label="Title" />
+              </MenuItem>
+              <MenuItem className="px-4 py-2">
+                <Checkbox
+                  checked={visibleColumns.categories}
+                  id="column-categories"
+                  label="Categories"
+                  onChange={() => handleColumnVisibilityChange("categories")}
+                />
+              </MenuItem>
+              <MenuItem className="px-4 py-2">
+                <Checkbox
+                  checked={visibleColumns.created_at}
+                  id="column-published-at"
+                  label="Published At"
+                  onChange={() => handleColumnVisibilityChange("created_at")}
+                />
+              </MenuItem>
+              <MenuItem className="px-4 py-2">
+                <Checkbox
+                  checked={visibleColumns.status}
+                  id="column-status"
+                  label="Status"
+                  onChange={() => handleColumnVisibilityChange("status")}
+                />
+              </MenuItem>
+            </ActionDropdown>
+            <Button
+              className="my-2 ml-2"
+              icon={Filter}
+              style="text"
+              onClick={handleShowPane}
+            />
+          </div>
         </div>
         <div className="flex-1 overflow-auto px-4">
-          <BlogTable posts={posts} setPosts={setPosts} />
+          <BlogTable
+            posts={posts}
+            setPosts={setPosts}
+            visibleColumns={visibleColumns}
+          />
         </div>
       </div>
       <Pane isOpen={showPane} onClose={handleShowPane}>

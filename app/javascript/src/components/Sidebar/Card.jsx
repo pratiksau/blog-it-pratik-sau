@@ -9,7 +9,7 @@ const Card = memo(({ category, selectedCategoryIds, onCategorySelect }) => {
     <div
       className={`my-1 flex cursor-pointer flex-col border ${
         isSelected
-          ? "border-white bg-white"
+          ? "border-gray-100 bg-white"
           : "border-black hover:border-gray-500 hover:bg-gray-100"
       }`}
       onClick={() => onCategorySelect(category.id)}

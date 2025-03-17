@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 import postApi from "../../apis/posts";
 
-const BlogTable = ({ posts, setPosts }) => {
+const BlogTable = ({ posts, setPosts, visibleColumns = {} }) => {
   const [selectedPosts, setSelectedPosts] = useState([]);
 
   const handlePublishToggle = async (slug, currentStatus) => {
@@ -64,16 +64,24 @@ const BlogTable = ({ posts, setPosts }) => {
       dataIndex: "title",
       key: "title",
       width: 250,
-      render: (title, record) => (
-        <Tooltip content={title}>
+      render: (title, record) =>
+        title.length > 25 ? (
+          <Tooltip content={title}>
+            <Link
+              className="line-clamp-1 text-indigo-500 hover:text-indigo-700"
+              to={`/blogs/${record.slug}/edit`}
+            >
+              {title}
+            </Link>
+          </Tooltip>
+        ) : (
           <Link
-            className="line-clamp-1 text-indigo-500 hover:text-indigo-700"
+            className=" text-indigo-500 hover:text-indigo-700"
             to={`/blogs/${record.slug}/edit`}
           >
             {title}
           </Link>
-        </Tooltip>
-      ),
+        ),
     },
     {
       title: "Categories",
@@ -132,6 +140,11 @@ const BlogTable = ({ posts, setPosts }) => {
     },
   ];
 
+  // Filter columns based on visibleColumns prop
+  const filteredColumnData = columnData.filter(
+    column => visibleColumns[column.key] !== false
+  );
+
   const rowData = posts.map(post => ({
     title: post.title,
     slug: post.slug,
@@ -145,7 +158,7 @@ const BlogTable = ({ posts, setPosts }) => {
   return (
     <Table
       rowSelection
-      columnData={columnData}
+      columnData={filteredColumnData}
       defaultPageSize={10}
       rowData={rowData}
       selectedRowKeys={selectedPosts}

@@ -112,7 +112,7 @@ const SidebarPane = () => {
   };
 
   return (
-    <div className="flex h-screen w-[20vw] flex-col overflow-y-scroll bg-gray-300">
+    <div className="flex h-screen w-[20vw] flex-col overflow-y-scroll bg-gray-200">
       <div className="flex flex-col p-2">
         <div className="flex flex-row items-center justify-between">
           <Typography>CATEGORIES</Typography>
