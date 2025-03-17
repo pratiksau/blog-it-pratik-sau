@@ -157,12 +157,11 @@ class Api::V1::PostsControllerTest < ActionDispatch::IntegrationTest
     unauthorized_user = create(:user, organization: different_org)
     unauthorized_headers = headers(unauthorized_user)
 
-    # Test unauthorized create: send a user_id that does not match current_user's id.
     post_params = {
       post: {
         title: "Test post",
         description: "Test description",
-        user_id: @user.id, # intentionally not matching unauthorized_user.id
+        user_id: @user.id,
         is_bloggable: true
       }
     }
@@ -172,13 +171,11 @@ class Api::V1::PostsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :forbidden
 
-    # Test unauthorized update
     put api_v1_post_path(@post.slug),
       params: { post: { title: "New title" } },
       headers: unauthorized_headers
     assert_response :forbidden
 
-    # Test unauthorized destroy
     assert_no_difference "Post.count" do
       delete api_v1_post_path(@post.slug), headers: unauthorized_headers
     end
