@@ -10,6 +10,7 @@ import {
   Dropdown,
   Checkbox,
   ActionDropdown,
+  Alert,
 } from "@bigbinary/neetoui";
 import categoryApi from "src/apis/categories";
 import postApi from "src/apis/posts";
@@ -33,6 +34,8 @@ const Summary = () => {
     status: true,
     actions: true,
   });
+  const [selectedPosts, setSelectedPosts] = useState([]);
+  const [isClearAllAlertOpen, setIsClearAllAlertOpen] = useState(false);
 
   const { MenuItem } = Dropdown;
 
@@ -105,6 +108,73 @@ const Summary = () => {
     }));
   };
 
+  const handleBulkStatusChange = async targetStatus => {
+    try {
+      const selectedPostIds = posts
+        .filter(post => selectedPosts.includes(post.id))
+        .map(post => post.id);
+
+      if (selectedPostIds.length === 0) return;
+
+      const postsToUpdate = posts.filter(
+        post =>
+          selectedPosts.includes(post.id) &&
+          post.status.toLowerCase() !== targetStatus
+      );
+
+      if (postsToUpdate.length === 0) {
+        logger.log("All selected posts are already in the target status");
+        setSelectedPosts([]);
+
+        return;
+      }
+
+      const postsToUpdateIds = postsToUpdate.map(post => post.id);
+
+      await postApi.bulkUpdate({
+        post_ids: postsToUpdateIds,
+        status: targetStatus,
+      });
+
+      setPosts(prevPosts =>
+        prevPosts.map(post => {
+          if (postsToUpdateIds.includes(post.id)) {
+            return {
+              ...post,
+              status: targetStatus,
+            };
+          }
+
+          return post;
+        })
+      );
+
+      setSelectedPosts([]);
+    } catch (error) {
+      logger.error("Error changing post status:", error);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      const selectedPostIds = posts
+        .filter(post => selectedPosts.includes(post.id))
+        .map(post => post.id);
+
+      if (selectedPostIds.length === 0) return;
+
+      await postApi.bulkDelete(selectedPostIds);
+
+      setPosts(prevPosts =>
+        prevPosts.filter(post => !selectedPostIds.includes(post.id))
+      );
+
+      setSelectedPosts([]);
+    } catch (error) {
+      logger.error("Error deleting posts:", error);
+    }
+  };
+
   if (loading) {
     return <PageLoader />;
   }
@@ -122,39 +192,67 @@ const Summary = () => {
             </Typography>
           </div>
           <div className="flex flex-row items-center">
-            <ActionDropdown
-              buttonStyle="secondary"
-              className="p-2"
-              label="Columns"
-            >
-              <MenuItem className="px-4 py-2">
-                <Checkbox checked disabled id="column-title" label="Title" />
-              </MenuItem>
-              <MenuItem className="px-4 py-2">
-                <Checkbox
-                  checked={visibleColumns.categories}
-                  id="column-categories"
-                  label="Categories"
-                  onChange={() => handleColumnVisibilityChange("categories")}
+            {selectedPosts.length > 0 ? (
+              <div className="flex flex-row items-center">
+                <ActionDropdown
+                  buttonStyle="secondary"
+                  className="p-2"
+                  label="Change Status"
+                >
+                  <MenuItem
+                    className="px-4 py-2"
+                    onClick={() => handleBulkStatusChange("published")}
+                  >
+                    Publish
+                  </MenuItem>
+                  <MenuItem
+                    className="px-4 py-2"
+                    onClick={() => handleBulkStatusChange("draft")}
+                  >
+                    Draft
+                  </MenuItem>
+                </ActionDropdown>
+                <Button
+                  label="Delete"
+                  style="danger-text"
+                  onClick={() => setIsClearAllAlertOpen(true)}
                 />
-              </MenuItem>
-              <MenuItem className="px-4 py-2">
-                <Checkbox
-                  checked={visibleColumns.created_at}
-                  id="column-published-at"
-                  label="Published At"
-                  onChange={() => handleColumnVisibilityChange("created_at")}
-                />
-              </MenuItem>
-              <MenuItem className="px-4 py-2">
-                <Checkbox
-                  checked={visibleColumns.status}
-                  id="column-status"
-                  label="Status"
-                  onChange={() => handleColumnVisibilityChange("status")}
-                />
-              </MenuItem>
-            </ActionDropdown>
+              </div>
+            ) : (
+              <ActionDropdown
+                buttonStyle="secondary"
+                className="p-2"
+                label="Columns"
+              >
+                <MenuItem className="px-4 py-2">
+                  <Checkbox checked disabled id="column-title" label="Title" />
+                </MenuItem>
+                <MenuItem className="px-4 py-2">
+                  <Checkbox
+                    checked={visibleColumns.categories}
+                    id="column-categories"
+                    label="Categories"
+                    onChange={() => handleColumnVisibilityChange("categories")}
+                  />
+                </MenuItem>
+                <MenuItem className="px-4 py-2">
+                  <Checkbox
+                    checked={visibleColumns.created_at}
+                    id="column-published-at"
+                    label="Published At"
+                    onChange={() => handleColumnVisibilityChange("created_at")}
+                  />
+                </MenuItem>
+                <MenuItem className="px-4 py-2">
+                  <Checkbox
+                    checked={visibleColumns.status}
+                    id="column-status"
+                    label="Status"
+                    onChange={() => handleColumnVisibilityChange("status")}
+                  />
+                </MenuItem>
+              </ActionDropdown>
+            )}
             <Button
               className="my-2 ml-2"
               icon={Filter}
@@ -168,6 +266,7 @@ const Summary = () => {
             posts={posts}
             setPosts={setPosts}
             visibleColumns={visibleColumns}
+            onSelectionChange={setSelectedPosts}
           />
         </div>
       </div>
@@ -237,6 +336,15 @@ const Summary = () => {
           </div>
         </Pane.Footer>
       </Pane>
+      <Alert
+        cancelButtonLabel="Cancel"
+        isOpen={isClearAllAlertOpen}
+        message={`Are you sure you want to delete ${selectedPosts.length} posts?`}
+        submitButtonLabel="Delete"
+        title="Delete posts?"
+        onClose={() => setIsClearAllAlertOpen(false)}
+        onSubmit={handleBulkDelete}
+      />
     </div>
   );
 };

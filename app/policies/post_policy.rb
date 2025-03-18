@@ -36,6 +36,14 @@ class PostPolicy
     post.user_id == user.id
   end
 
+  def bulk_update?
+    user.present?
+  end
+
+  def bulk_destroy?
+    user.present?
+  end
+
   class Scope
     attr_reader :user, :scope
 

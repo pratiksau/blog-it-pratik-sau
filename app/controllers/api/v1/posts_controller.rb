@@ -46,6 +46,44 @@ class Api::V1::PostsController < ApplicationController
     @posts = PostFilterService.new(base_posts, params).filter
   end
 
+  def bulk_update
+    post_ids = params[:post_ids]
+    target_status = params.require(:status)
+
+    if post_ids.blank?
+      render json: { error: "No post IDs provided" }, status: :bad_request
+      return
+    end
+
+    authorize Post, :bulk_update?
+
+    updated_count = BulkPostUpdateService.new(
+      user: current_user,
+      post_ids: post_ids,
+      target_status: target_status
+    ).call
+
+    render json: { notice: "#{updated_count} posts updated to #{target_status}." }
+  end
+
+  def bulk_destroy
+    post_ids = params[:post_ids]
+
+    if post_ids.blank?
+      render json: { error: "No post IDs provided" }, status: :bad_request
+      return
+    end
+
+    authorize Post, :bulk_destroy?
+
+    deleted_count = BulkPostDestroyService.new(
+      user: current_user,
+      post_ids: post_ids
+    ).call
+
+    render json: { notice: "#{deleted_count} posts successfully deleted." }
+  end
+
   private
 
     def post_params

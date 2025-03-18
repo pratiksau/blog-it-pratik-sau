@@ -7,7 +7,12 @@ import { Link } from "react-router-dom";
 
 import postApi from "../../apis/posts";
 
-const BlogTable = ({ posts, setPosts, visibleColumns = {} }) => {
+const BlogTable = ({
+  posts,
+  setPosts,
+  visibleColumns = {},
+  onSelectionChange,
+}) => {
   const [selectedPosts, setSelectedPosts] = useState([]);
 
   const handlePublishToggle = async (slug, currentStatus) => {
@@ -36,21 +41,11 @@ const BlogTable = ({ posts, setPosts, visibleColumns = {} }) => {
   const handleDelete = async slug => {
     try {
       await postApi.destroy(slug);
-      window.location.reload(); // Refresh to show updated list
+      window.location.reload();
     } catch (error) {
       logger.error(error);
     }
   };
-
-  // Destructure and format post data for the table
-  // const formattedPosts = posts.map(post => ({
-  //   title: post.title,
-  //   slug: post.slug,
-  //   categories: post.categories || [],
-  //   created_at: post.created_at,
-  //   status: post.status,
-  //   key: post.id || post.slug, // Ensure each row has a unique key
-  // }));
 
   const formatDate = dateString => {
     const date = new Date(dateString);
@@ -140,7 +135,6 @@ const BlogTable = ({ posts, setPosts, visibleColumns = {} }) => {
     },
   ];
 
-  // Filter columns based on visibleColumns prop
   const filteredColumnData = columnData.filter(
     column => visibleColumns[column.key] !== false
   );
@@ -155,14 +149,20 @@ const BlogTable = ({ posts, setPosts, visibleColumns = {} }) => {
     id: post.id,
   }));
 
+  const handleSelectedPostsChange = selectedRowKeys => {
+    setSelectedPosts(selectedRowKeys);
+    if (onSelectionChange) {
+      onSelectionChange(selectedRowKeys);
+    }
+  };
+
   return (
     <Table
       rowSelection
       columnData={filteredColumnData}
-      defaultPageSize={10}
       rowData={rowData}
       selectedRowKeys={selectedPosts}
-      onRowSelect={selectedPosts => setSelectedPosts(selectedPosts)}
+      onRowSelect={handleSelectedPostsChange}
     />
   );
 };

@@ -14,6 +14,8 @@ Rails.application.routes.draw do
         resources :posts, except: %i[new edit], param: :slug do
           collection do
             get :user_posts
+            patch :bulk_update
+            delete :bulk_destroy
           end
         end
         resources :users, only: %i[index create show]
