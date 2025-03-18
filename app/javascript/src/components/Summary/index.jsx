@@ -11,6 +11,7 @@ import {
   Checkbox,
   ActionDropdown,
   Alert,
+  Tag,
 } from "@bigbinary/neetoui";
 import categoryApi from "src/apis/categories";
 import postApi from "src/apis/posts";
@@ -98,6 +99,26 @@ const Summary = () => {
     setSelectedStatus(null);
     fetchPosts();
     handleShowPane();
+  };
+
+  const handleRemoveCategory = categoryValue => {
+    const updatedCategories = selectedCategories.filter(
+      c => c.value !== categoryValue
+    );
+    setSelectedCategories(updatedCategories);
+    fetchPosts({
+      search: searchTerm,
+      category_ids: updatedCategories.map(c => c.value).join(","),
+      status: selectedStatus?.value,
+    });
+  };
+
+  const handleRemoveStatus = () => {
+    setSelectedStatus(null);
+    fetchPosts({
+      search: searchTerm,
+      category_ids: selectedCategories.map(cat => cat.value).join(","),
+    });
   };
 
   const handleColumnVisibilityChange = columnKey => {
@@ -188,7 +209,30 @@ const Summary = () => {
               My blog posts
             </Typography>
             <Typography className="text-sm text-gray-500">
-              {posts.length} articles
+              {searchTerm || selectedCategories.length > 0 || selectedStatus ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span>{posts.length} results for</span>
+                  {searchTerm && (
+                    <span className="font-medium">"{searchTerm}"</span>
+                  )}
+                  {selectedCategories.length > 0 &&
+                    selectedCategories.map(category => (
+                      <Tag
+                        key={category.value}
+                        label={category.label}
+                        onClose={() => handleRemoveCategory(category.value)}
+                      />
+                    ))}
+                  {selectedStatus && (
+                    <Tag
+                      label={selectedStatus.label}
+                      onClose={handleRemoveStatus}
+                    />
+                  )}
+                </div>
+              ) : (
+                `${posts.length} articles`
+              )}
             </Typography>
           </div>
           <div className="flex flex-row items-center">
