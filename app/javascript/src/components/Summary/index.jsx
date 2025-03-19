@@ -109,7 +109,7 @@ const Summary = () => {
     fetchPosts({
       search: searchTerm,
       category_ids: updatedCategories.map(c => c.value).join(","),
-      status: selectedStatus?.value,
+      status: selectedStatus ? selectedStatus.value : null,
     });
   };
 
