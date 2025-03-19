@@ -52,6 +52,14 @@ const Blogs = () => {
     return format(date, "dd MMMM yyyy");
   };
 
+  const handleVoteSuccess = updatedPost => {
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post.slug === updatedPost.slug ? updatedPost : post
+      )
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
@@ -86,9 +94,14 @@ const Blogs = () => {
               category={post.categories}
               date={formatDate(post.created_at)}
               description={post.description}
+              downvotes={post.downvotes}
+              isBloggable={post.is_bloggable}
               key={post.id}
               slug={post.slug}
               title={post.title}
+              upvotes={post.upvotes}
+              userVoted={post.user_vote}
+              onVoteSuccess={handleVoteSuccess}
             />
           ))}
         </div>

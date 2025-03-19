@@ -9,6 +9,8 @@ class Post < ApplicationRecord
   belongs_to :user
   belongs_to :organization
   has_and_belongs_to_many :categories
+  has_many :votes, dependent: :destroy
+  has_many :voters, through: :votes, source: :user
 
   validates :title, presence: true, length: { maximum: MAXIMUM_TITLE_LENGTH }
   validates :description, presence: true, length: { maximum: MAXIMUM_DESCRIPTION_LENGTH }
@@ -17,6 +19,47 @@ class Post < ApplicationRecord
   validate :slug_not_changed
 
   before_create :set_slug
+
+  def vote_by(user, vote_type)
+    vote = votes.find_or_initialize_by(user: user)
+
+    if vote.new_record?
+      vote.vote_type = vote_type
+      vote.save
+    elsif vote.vote_type.to_s != vote_type.to_s
+      vote.update(vote_type: vote_type)
+    else
+      vote.destroy
+    end
+
+    update_bloggable_status
+  end
+
+  def upvoted_by?(user)
+    votes.exists?(user: user, vote_type: :upvote)
+  end
+
+  def downvoted_by?(user)
+    votes.exists?(user: user, vote_type: :downvote)
+  end
+
+  def upvote_ratio
+    return 0 if votes_count == 0
+
+    upvotes.to_f / votes_count
+  end
+
+  def update_bloggable_status
+    if upvote_ratio > 0.7 && !is_bloggable
+      update(is_bloggable: true)
+    elsif upvote_ratio < 0.7 && is_bloggable
+      update(is_bloggable: false)
+    end
+  end
+
+  def score
+    upvotes - downvotes
+  end
 
   private
 
@@ -41,5 +84,8 @@ class Post < ApplicationRecord
       if will_save_change_to_slug? && self.persisted?
         errors.add(:slug, I18n.t("post.slug.immutable"))
       end
+    end
+
+    def unvote(user)
     end
 end

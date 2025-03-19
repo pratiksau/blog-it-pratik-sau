@@ -26,6 +26,10 @@ const bulkDelete = postIds =>
     data: { post_ids: postIds },
   });
 
+const upvote = slug => axios.post(`/api/v1/posts/${slug}/upvote`);
+
+const downvote = slug => axios.post(`/api/v1/posts/${slug}/downvote`);
+
 const postApi = {
   fetch,
   create,
@@ -35,6 +39,8 @@ const postApi = {
   userPosts,
   bulkUpdate,
   bulkDelete,
+  upvote,
+  downvote,
 };
 
 export default postApi;

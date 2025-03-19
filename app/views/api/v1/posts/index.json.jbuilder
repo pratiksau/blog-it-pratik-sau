@@ -7,6 +7,7 @@ json.posts @posts do |post|
     :description,
     :upvotes,
     :downvotes,
+    :votes_count,
     :is_bloggable,
     :slug,
     :created_at,
@@ -23,5 +24,12 @@ json.posts @posts do |post|
     json.extract! category,
       :id,
       :name
+  end
+
+  if defined?(current_user) && current_user
+    json.user_vote do
+      json.upvoted post.upvoted_by?(current_user)
+      json.downvoted post.downvoted_by?(current_user)
+    end
   end
 end

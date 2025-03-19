@@ -17,6 +17,10 @@ Rails.application.routes.draw do
             patch :bulk_update
             delete :bulk_destroy
           end
+          member do
+            post "upvote", to: "votes#upvote"
+            post "downvote", to: "votes#downvote"
+          end
         end
         resources :users, only: %i[index create show]
         resources :categories, only: %i[index create]

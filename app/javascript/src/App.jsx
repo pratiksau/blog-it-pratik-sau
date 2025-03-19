@@ -42,7 +42,13 @@ const App = () => {
             <Route exact path="/">
               <Redirect to="/blogs" />
             </Route>
-            <Route exact component={Blogs} path="/blogs" />
+            <PrivateRoute
+              exact
+              component={Blogs}
+              condition={isLoggedIn}
+              path="/blogs"
+              redirectRoute="/login"
+            />
             <Route exact component={Signup} path="/signup" />
             <Route exact path="/login">
               {isLoggedIn ? <Redirect to="/blogs" /> : <Login />}
@@ -53,12 +59,6 @@ const App = () => {
             <Route exact component={EditBlog} path="/blogs/:slug/edit" />
             <Route exact component={Summary} path="/summary" />
             <Route exact component={PreviewPage} path="/preview/:slug" />
-            <PrivateRoute
-              component={Blogs}
-              condition={isLoggedIn}
-              path="/"
-              redirectRoute="/login"
-            />
           </Switch>
         </div>
       </div>

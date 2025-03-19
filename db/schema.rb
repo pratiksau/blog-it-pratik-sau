@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_11_095146) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_19_052039) do
   create_table "categories", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -42,6 +42,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_095146) do
     t.integer "user_id", null: false
     t.integer "organization_id", null: false
     t.string "status", default: "published", null: false
+    t.integer "votes_count", default: 0, null: false
     t.index ["organization_id"], name: "index_posts_on_organization_id"
     t.index ["slug"], name: "index_posts_on_slug", unique: true
     t.index ["user_id"], name: "index_posts_on_user_id"
@@ -58,7 +59,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_095146) do
     t.index ["organization_id"], name: "index_users_on_organization_id"
   end
 
+  create_table "votes", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "user_id", null: false
+    t.integer "vote_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_votes_on_post_id"
+    t.index ["user_id", "post_id"], name: "index_votes_on_user_id_and_post_id", unique: true
+    t.index ["user_id"], name: "index_votes_on_user_id"
+  end
+
   add_foreign_key "posts", "organizations"
   add_foreign_key "posts", "users"
   add_foreign_key "users", "organizations"
+  add_foreign_key "votes", "posts"
+  add_foreign_key "votes", "users"
 end

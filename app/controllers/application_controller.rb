@@ -9,6 +9,8 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user_using_x_auth_token
 
+  helper_method :current_user
+
   def authenticate_user_using_x_auth_token
     user_email = request.headers["X-Auth-Email"]
     auth_token = request.headers["X-Auth-Token"]

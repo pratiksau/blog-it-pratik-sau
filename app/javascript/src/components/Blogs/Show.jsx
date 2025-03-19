@@ -8,14 +8,10 @@ import { useHistory, useParams } from "react-router-dom";
 import postsApi from "apis/posts";
 
 import PageLoader from "../commons/PageLoader";
+import VoteButtons from "../commons/VoteButtons";
 
 const Show = () => {
-  const [title, setTitle] = useState(null);
-  const [description, setDescription] = useState(null);
-  const [categories, setCategories] = useState(null);
-  const [user, setUser] = useState(null);
-  const [createdAt, setCreatedAt] = useState(null);
-  const [status, setStatus] = useState(null);
+  const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const { slug } = useParams();
   const history = useHistory();
@@ -23,17 +19,8 @@ const Show = () => {
   const fetchPostDetails = async () => {
     try {
       setLoading(true);
-      const {
-        data: {
-          post: { title, description, categories, user, created_at, status },
-        },
-      } = await postsApi.show(slug);
-      setTitle(title);
-      setDescription(description);
-      setCategories(categories);
-      setUser(user);
-      setCreatedAt(created_at);
-      setStatus(status);
+      const response = await postsApi.show(slug);
+      setPost(response.data.post);
     } catch (error) {
       logger.error(error);
       history.push("/blogs");
@@ -51,7 +38,10 @@ const Show = () => {
 
     return format(date, "dd MMMM yyyy");
   };
-  formatDate(createdAt);
+
+  const handleVoteSuccess = updatedPost => {
+    setPost(updatedPost);
+  };
 
   useEffect(() => {
     fetchPostDetails();
@@ -64,7 +54,7 @@ const Show = () => {
       <div className="mt-8 flex w-full items-start gap-x-6">
         <div className="flex w-full flex-col gap-y-6 p-8">
           <div className="flex flex-row gap-x-1">
-            {categories.map(category => (
+            {post.categories.map(category => (
               <Tag
                 key={category.id}
                 label={category.name}
@@ -76,32 +66,41 @@ const Show = () => {
           <div className="flex w-full flex-row justify-between">
             <div className="flex flex-row gap-x-2">
               <Typography className="text-3xl font-semibold">
-                {title}
+                {post.title}
               </Typography>
-              {status === "draft" && (
+              {post.status === "draft" && (
                 <Tag
                   className="mx-2 my-2"
-                  label={status}
+                  label={post.status}
                   style="danger"
                   type="outline"
                 />
               )}
             </div>
-            <Button icon={() => <Edit />} style="text" onClick={handleEdit} />
+            <div className="flex items-center gap-4">
+              <VoteButtons
+                downvotes={post.downvotes}
+                slug={post.slug}
+                upvotes={post.upvotes}
+                userVoted={post.user_vote}
+                onVoteSuccess={handleVoteSuccess}
+              />
+              <Button icon={() => <Edit />} style="text" onClick={handleEdit} />
+            </div>
           </div>
           <div className="flex flex-row gap-x-2">
-            <Avatar user={{ name: user.name }} />
+            <Avatar user={{ name: post.user.name }} />
             <div className="flex flex-col gap-x-2">
               <Typography className="text-sm text-black">
-                {user.name}
+                {post.user.name}
               </Typography>
               <Typography className="text-xs text-gray-500">
-                {formatDate(createdAt)}
+                {formatDate(post.created_at)}
               </Typography>
             </div>
           </div>
           <Typography className="text-base text-gray-700">
-            {description}
+            {post.description}
           </Typography>
         </div>
       </div>
