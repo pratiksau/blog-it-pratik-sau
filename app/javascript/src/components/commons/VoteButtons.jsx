@@ -37,20 +37,24 @@ const VoteButtons = ({
     <div className="flex items-center gap-4">
       <div className="flex items-center">
         <Button
-          className={userVoted?.upvoted ? "text-green-400" : "text-gray-500"}
           icon={UpArrow}
           iconPosition="left"
           style="text"
+          className={
+            userVoted && userVoted.upvoted ? "text-green-400" : "text-gray-500"
+          }
           onClick={handleUpvote}
         />
         <Typography className="ml-2">{upvotes}</Typography>
       </div>
       <div className="flex items-center">
         <Button
-          className={userVoted?.downvoted ? "text-red-500" : "text-gray-500"}
           icon={DownArrow}
           iconPosition="left"
           style="text"
+          className={
+            userVoted && userVoted.downvoted ? "text-red-500" : "text-gray-500"
+          }
           onClick={handleDownvote}
         />
         <Typography className="ml-2">{downvotes}</Typography>

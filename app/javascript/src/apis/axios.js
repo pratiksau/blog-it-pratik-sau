@@ -38,7 +38,7 @@ const handleSuccessResponse = response => {
 };
 
 const handleErrorResponse = axiosErrorObject => {
-  if (axiosErrorObject.response?.status === 401) {
+  if (axiosErrorObject.response.status === 401) {
     setToLocalStorage({
       authToken: null,
       email: null,
@@ -46,8 +46,9 @@ const handleErrorResponse = axiosErrorObject => {
     });
     setTimeout(() => (window.location.href = "/"), 2000);
   }
-  Toastr.error(axiosErrorObject.response?.data?.error || DEFAULT_ERROR_MESSAGE);
-  if (axiosErrorObject.response?.status === 423) {
+
+  Toastr.error(axiosErrorObject.response.data.error || DEFAULT_ERROR_MESSAGE);
+  if (axiosErrorObject.response.status === 423) {
     setTimeout(() => (window.location.href = "/"), 2000);
   }
 
