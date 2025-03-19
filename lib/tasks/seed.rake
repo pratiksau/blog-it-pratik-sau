@@ -1,4 +1,19 @@
-require 'faker'
+begin
+  require 'faker'
+rescue LoadError
+  puts "Warning: Faker gem not found. Some seed data will use simple placeholders instead."
+  module Faker
+    class Lorem
+      def self.sentence(word_count: 3)
+        "Sample text with #{word_count} words"
+      end
+
+      def self.paragraphs(number: 3)
+        Array.new(number) { "Sample paragraph text." }
+      end
+    end
+  end
+end
 
 namespace :seed do
   desc "Seed organizations"
