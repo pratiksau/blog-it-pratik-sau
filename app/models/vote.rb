@@ -8,43 +8,16 @@ class Vote < ApplicationRecord
 
   validates :user_id, uniqueness: { scope: :post_id, message: "has already voted for this post" }
 
-  after_create :update_vote_type_counts
-  after_update :update_vote_type_counts_on_update
-  after_destroy :update_vote_type_counts_on_destroy
+  after_create :update_post_vote_counts
+  after_update :update_post_vote_counts
+  after_destroy :update_post_vote_counts
 
   private
 
-    def update_vote_type_counts
-      if upvote?
-        post.increment!(:upvotes)
-      else
-        post.increment!(:downvotes)
-      end
-    end
+    def update_post_vote_counts
+      upvotes_count = post.votes.upvote.count
+      downvotes_count = post.votes.downvote.count
 
-    def update_vote_type_counts_on_update
-      if saved_change_to_vote_type?
-        old_vote_type, new_vote_type = saved_change_to_vote_type
-
-        if old_vote_type.to_s == "upvote"
-          post.decrement!(:upvotes)
-        else
-          post.decrement!(:downvotes)
-        end
-
-        if new_vote_type.to_s == "upvote"
-          post.increment!(:upvotes)
-        else
-          post.increment!(:downvotes)
-        end
-      end
-    end
-
-    def update_vote_type_counts_on_destroy
-      if upvote?
-        post.decrement!(:upvotes)
-      else
-        post.decrement!(:downvotes)
-      end
+      post.update_columns(upvotes: upvotes_count, downvotes: downvotes_count)
     end
 end

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { UpArrow, DownArrow } from "@bigbinary/neeto-icons";
+import { Up, Down } from "@bigbinary/neeto-icons";
 import { Button, Typography } from "@bigbinary/neetoui";
 import propTypes from "prop-types";
 
@@ -34,10 +34,10 @@ const VoteButtons = ({
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col items-center gap-4">
       <div className="flex items-center">
         <Button
-          icon={UpArrow}
+          icon={Up}
           iconPosition="left"
           style="text"
           className={
@@ -45,11 +45,13 @@ const VoteButtons = ({
           }
           onClick={handleUpvote}
         />
-        <Typography className="ml-2">{upvotes}</Typography>
       </div>
+      <Typography className="text-2xl font-bold text-gray-600">
+        {upvotes - downvotes}
+      </Typography>
       <div className="flex items-center">
         <Button
-          icon={DownArrow}
+          icon={Down}
           iconPosition="left"
           style="text"
           className={
@@ -57,7 +59,6 @@ const VoteButtons = ({
           }
           onClick={handleDownvote}
         />
-        <Typography className="ml-2">{downvotes}</Typography>
       </div>
     </div>
   );

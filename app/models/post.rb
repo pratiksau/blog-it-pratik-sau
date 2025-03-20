@@ -60,7 +60,9 @@ class Post < ApplicationRecord
   end
 
   def score
-    upvotes - downvotes
+    up = [upvotes || 0, 0].max
+    down = [downvotes || 0, 0].max
+    up - down
   end
 
   private

@@ -41,7 +41,7 @@ const Signup = ({ history }) => {
         organization_id: organizationId,
       });
       setLoading(false);
-      history.push("/dashboard");
+      history.push("/blogs");
     } catch (error) {
       logger.error(error);
       setLoading(false);
