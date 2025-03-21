@@ -59,6 +59,11 @@ const App = () => {
             <Route exact component={EditBlog} path="/blogs/:slug/edit" />
             <Route exact component={Summary} path="/summary" />
             <Route exact component={PreviewPage} path="/preview/:slug" />
+            {/* <Route
+              exact
+              component={DownloadReport}
+              path="/blogs/:slug/report"
+            /> */}
           </Switch>
         </div>
       </div>

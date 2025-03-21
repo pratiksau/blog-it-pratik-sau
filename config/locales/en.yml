@@ -37,3 +37,5 @@ en:
   post:
     slug:
       immutable: "is immutable!"
+  in_progress: "%{action} is in progress."
+  not_found: "%{entity} not found."

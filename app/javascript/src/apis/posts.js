@@ -30,6 +30,11 @@ const upvote = slug => axios.post(`/api/v1/posts/${slug}/upvote`);
 
 const downvote = slug => axios.post(`/api/v1/posts/${slug}/downvote`);
 
+const generatePdf = slug => axios.post(`/api/v1/posts/${slug}/report`, {});
+
+const download = slug =>
+  axios.get(`/api/v1/posts/${slug}/report/download`, { responseType: "blob" });
+
 const postApi = {
   fetch,
   create,
@@ -41,6 +46,8 @@ const postApi = {
   bulkDelete,
   upvote,
   downvote,
+  generatePdf,
+  download,
 };
 
 export default postApi;

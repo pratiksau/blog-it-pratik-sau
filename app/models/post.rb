@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Post < ApplicationRecord
+  scope :accessible_to, ->(user) { where(user: user) }
   MAXIMUM_TITLE_LENGTH = 125
   MAXIMUM_DESCRIPTION_LENGTH = 10000
 
@@ -13,6 +14,8 @@ class Post < ApplicationRecord
   has_and_belongs_to_many :categories
   has_many :votes, dependent: :destroy
   has_many :voters, through: :votes, source: :user
+
+  has_one_attached :report
 
   validates :title, presence: true, length: { maximum: MAXIMUM_TITLE_LENGTH }
   validates :description, presence: true, length: { maximum: MAXIMUM_DESCRIPTION_LENGTH }

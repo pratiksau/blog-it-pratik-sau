@@ -1,0 +1,47 @@
+<div class="mb-4 font-bold">Post Report</div>
+<div class="p-4 mb-8 bg-white neeto-ui-shadow-s rounded">
+  <div class="mb-4">
+    <h2 class="font-semibold text-xl"><%= post.title %></h2>
+    <p class="text-gray-600">
+      <strong>Status:</strong> <%= post.status.capitalize %>
+    </p>
+  </div>
+
+  <div class="mb-4">
+    <p class="font-semibold">Description:</p>
+    <p class="mt-2 text-gray-700"><%= post.description %></p>
+  </div>
+
+  <div class="mb-4">
+    <p class="font-semibold">Author:</p>
+    <p class="text-gray-700"><%= post.user.name %></p>
+  </div>
+
+  <% if post.categories.any? %>
+    <div class="mb-4">
+      <p class="font-semibold">Categories:</p>
+      <ul class="mt-2">
+        <% post.categories.each do |category| %>
+          <li class="text-gray-700">- <%= category.name %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <p class="font-semibold">Votes:</p>
+    <ul class="mt-2">
+      <li class="text-gray-700">Upvotes: <%= post.upvotes %></li>
+      <li class="text-gray-700">Downvotes: <%= post.downvotes %></li>
+      <li class="text-gray-700">Net Score: <%= post.score %></li>
+    </ul>
+  </div>
+
+  <div class="mb-4">
+    <p class="font-semibold">Dates:</p>
+    <p class="text-gray-700">
+      Created At: <%= post.created_at.strftime("%B %d, %Y %I:%M %p") %> <br>
+      Updated At: <%= post.updated_at.strftime("%B %d, %Y %I:%M %p") %>
+    </p>
+  </div>
+</div>

@@ -12,14 +12,17 @@ Rails.application.routes.draw do
     namespace :v1 do
       constraints(lambda { |req| req.format == :json }) do
         resources :posts, except: %i[new edit], param: :slug do
+          member do
+            resource :report, only: %i[create], module: :posts do
+              get :download
+            end
+            post "upvote", to: "votes#upvote"
+            post "downvote", to: "votes#downvote"
+          end
           collection do
             get :user_posts
             patch :bulk_update
             delete :bulk_destroy
-          end
-          member do
-            post "upvote", to: "votes#upvote"
-            post "downvote", to: "votes#downvote"
           end
         end
         resources :users, only: %i[index create show]
@@ -30,6 +33,7 @@ Rails.application.routes.draw do
     end
   end
 
+  # Only serve the home#index route for HTML requests
   root "home#index"
-  get "*path", to: "home#index", via: :all
+  get "*path", to: "home#index", via: :all, constraints: { format: :html }
 end

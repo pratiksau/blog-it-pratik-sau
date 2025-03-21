@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 
-import { Edit } from "@bigbinary/neeto-icons";
+import { Download, Edit } from "@bigbinary/neeto-icons";
 import { Avatar, Button, Tag, Typography } from "@bigbinary/neetoui";
 import { format } from "date-fns";
 import { useHistory, useParams } from "react-router-dom";
 
 import postsApi from "apis/posts";
 
+import DownloadReport from "./DownloadReport";
+
 import PageLoader from "../commons/PageLoader";
-import VoteButtons from "../commons/VoteButtons";
 
 const Show = () => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const { slug } = useParams();
   const history = useHistory();
 
@@ -39,8 +41,8 @@ const Show = () => {
     return format(date, "dd MMMM yyyy");
   };
 
-  const handleVoteSuccess = updatedPost => {
-    setPost(updatedPost);
+  const handleReportClick = () => {
+    setShowReportDialog(true);
   };
 
   useEffect(() => {
@@ -78,12 +80,10 @@ const Show = () => {
               )}
             </div>
             <div className="flex items-center gap-4">
-              <VoteButtons
-                downvotes={post.downvotes}
-                slug={post.slug}
-                upvotes={post.upvotes}
-                userVoted={post.user_vote}
-                onVoteSuccess={handleVoteSuccess}
+              <Button
+                icon={Download}
+                style="text"
+                onClick={handleReportClick}
               />
               <Button icon={() => <Edit />} style="text" onClick={handleEdit} />
             </div>
@@ -104,6 +104,11 @@ const Show = () => {
           </Typography>
         </div>
       </div>
+      <DownloadReport
+        isOpen={showReportDialog}
+        slug={slug}
+        onClose={() => setShowReportDialog(false)}
+      />
     </div>
   );
 };
