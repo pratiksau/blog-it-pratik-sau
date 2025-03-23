@@ -13,7 +13,7 @@ class Api::V1::CategoriesController < ApplicationController
   end
 
   def create
-    category = Category.create!(category_params)
+    Category.create!(category_params)
     render_notice(t("successfully_created_category"))
   end
 
