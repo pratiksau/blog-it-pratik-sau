@@ -4,7 +4,7 @@ class Api::V1::CategoriesController < ApplicationController
   skip_before_action :authenticate_user_using_x_auth_token
   def index
     if params[:search].present?
-      @categories = Category.where("name LIKE ?", "%#{params[:search]}%")
+      @categories = Category.where("name #{Constants::LIKE_OPERATOR} ?", "%#{params[:search]}%")
     else
       @categories = Category.all
     end
